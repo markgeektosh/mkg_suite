@@ -15,6 +15,7 @@ class ws_engine():
             response=requests.get(url, headers=cabeceras_html)
             response.raise_for_status()
             codigo_web=response.text
+            
             return codigo_web
         
         except requests.exceptions.RequestException as error:
@@ -56,4 +57,20 @@ class ws_engine():
         
         except requests.exceptions.RequestException as error:
             print(f"No se pudo conectar a: {pagina_web}")
+            print(f"Error: {error}")
+
+    #Obtiene el contenido de todos los div de una determinada clase
+    def obtener_div_clase(self, pagina_web:str, clase:str):
+        try:
+            codigo_web=self.obtener_codigo_html(pagina_web)
+
+            soup = BeautifulSoup(codigo_web, 'html.parser')
+            contenido_div = soup.find("div", class_=clase)
+
+            texto = contenido_div.get_text(separator="\n", strip=True)
+
+            return texto
+        
+        except requests.exceptions.RequestException as error:
+            print(f"No se pudo contectar a: {pagina_web}")
             print(f"Error: {error}")
