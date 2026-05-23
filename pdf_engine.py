@@ -28,7 +28,7 @@ class pdf_engine():
     
     #***Crea un archivo TXT por cada pagina de un PDF que se le pasa
     def crear_paginasPDF_a_txt(self, pdf_lista_paginas:list, metadata_libro:dict):
-        ruta_carpeta_paginasPDF_txt = f"{metadata_libro["titulo_libro"]}/paginasTXT"
+        ruta_carpeta_paginasPDF_txt = f"PDF_a/{metadata_libro["titulo_libro"]}/paginasTXT"
 
         if not os.path.exists(ruta_carpeta_paginasPDF_txt):
             os.makedirs(ruta_carpeta_paginasPDF_txt)
@@ -50,7 +50,7 @@ class pdf_engine():
 
     #***Crea un archivo TXT por cada pagina de un PDF que se le pasa, pero le da formato JSON
     def crear_paginasPDF_a_json(self, pdf_lista_paginas:list, metadata_libro:dict):
-        ruta_carpeta_paginasPDF_json = f"{metadata_libro["titulo_libro"]}/paginasJSON"
+        ruta_carpeta_paginasPDF_json = f"PDF_a/{metadata_libro["titulo_libro"]}/paginasJSON"
 
         if not os.path.exists(ruta_carpeta_paginasPDF_json):
             os.makedirs(ruta_carpeta_paginasPDF_json)
@@ -77,3 +77,26 @@ class pdf_engine():
                 print(f"Error al crear el archivo JSON {contador_de_paginas}")
 
         print("Se crearon las páginas en JSON")
+
+    def obtener_marcadores_capitulos_PDF(self, metadata_libro:dict):
+        None
+
+
+    def agregar_marcador_capitulos(self, metadata_libro:dict, marcadores_capitulos:dict):
+        lector_pdf = pypdf.PdfReader(metadata_libro["ruta_archivo_PDF"])
+        escritor_pdf = pypdf.PdfWriter()
+
+        for pagina in lector_pdf.pages:
+            escritor_pdf.add_page(pagina)
+
+        for capitulo_titulo, numero_pagina in marcadores_capitulos.items():
+            try:
+                escritor_pdf.add_outline_item(capitulo_titulo, numero_pagina - 1)
+            
+            except Exception as error:
+                print(f"Error al agregar el marcador en el PDF: {error}")
+
+        nuevo_pdf = f"{metadata_libro["nombre_PDF_capitulos"]}_capitulos.pdf"
+        
+        with open(nuevo_pdf, "wb") as pdf_final:
+            escritor_pdf.write(pdf_final)
